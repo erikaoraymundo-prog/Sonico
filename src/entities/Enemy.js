@@ -1,13 +1,23 @@
-export default class Enemy extends Phaser.GameObjects.Rectangle {
+export default class Enemy extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y) {
-        super(scene, x, y, 40, 40, 0xff0000);
+        super(scene, x, y, 'enemy');
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
+        this.setDisplaySize(40, 40);
         this.body.setCollideWorldBounds(true);
         this.body.setVelocityX(-100);
 
         this.isDead = false;
+
+        // Timer for random turns
+        this.turnTimer = scene.time.addEvent({
+            delay: Phaser.Math.Between(2000, 5000),
+            callback: () => {
+                if (!this.isDead) this.body.setVelocityX(-this.body.velocity.x);
+            },
+            loop: true
+        });
     }
 
     update() {

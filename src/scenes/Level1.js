@@ -7,6 +7,13 @@ export default class Level1 extends Phaser.Scene {
         super('Level1');
     }
 
+    preload() {
+        this.load.image('player', 'assets/sprites/player.png');
+        this.load.image('enemy', 'assets/sprites/enemy.png');
+        this.load.image('boss_invulnerable', 'assets/sprites/boss_invulnerable.png');
+        this.load.image('boss_vulnerable', 'assets/sprites/boss_vulnerable.png');
+    }
+
     create() {
         this.add.text(16, 16, 'Use Setas para Mover | Pule nos inimigos!', { fontSize: '18px', fill: '#fff' });
 
@@ -34,6 +41,16 @@ export default class Level1 extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.boss, this.handlePlayerBossCollision, null, this);
 
         this.cursors = this.input.keyboard.createCursorKeys();
+
+        // UI for Health
+        this.healthText = this.add.text(16, 40, `Vidas: ${this.player.health}`, { fontSize: '20px', fill: '#ff0' });
+        this.healthText.setScrollFactor(0);
+
+        this.events.on('update-ui', (data) => {
+            if (data.health !== undefined) {
+                this.healthText.setText(`Vidas: ${data.health}`);
+            }
+        });
 
         this.cameras.main.setBounds(0, 0, 1600, 600);
         this.physics.world.setBounds(0, 0, 1600, 600);

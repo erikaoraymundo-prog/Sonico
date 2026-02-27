@@ -1,8 +1,9 @@
-export default class Player extends Phaser.GameObjects.Rectangle {
+export default class Player extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y) {
-        super(scene, x, y, 40, 40, 0x0000ff);
+        super(scene, x, y, 'player');
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.setDisplaySize(48, 48);
 
         // scene.physics.add.existing(this); // already done in super or manual call
         this.body.setCollideWorldBounds(false); // Permite cair no abismo
@@ -59,8 +60,25 @@ export default class Player extends Phaser.GameObjects.Rectangle {
 
     takeDamage() {
         if (this.isDying) return;
+
+        this.health -= 1;
+        this.scene.events.emit('update-ui', { health: this.health });
+
+        if (this.health <= 0) {
+            this.die();
+            return;
+        }
+
         this.setAlpha(0.5);
-        this.scene.time.delayedCall(1000, () => this.setAlpha(1));
-        console.log("Player took damage!");
+        this.scene.tweens.add({
+            targets: this,
+            alpha: 1,
+            duration: 100,
+            repeat: 5,
+            yoyo: true,
+            onComplete: () => this.setAlpha(1)
+        });
+
+        console.log(`Player took damage! Health: ${this.health}`);
     }
 }

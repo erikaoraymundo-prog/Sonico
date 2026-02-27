@@ -1,8 +1,10 @@
-export default class Boss extends Phaser.GameObjects.Rectangle {
+export default class Boss extends Phaser.GameObjects.Sprite {
     constructor(scene, x, y) {
-        super(scene, x, y, 80, 80, 0x880088);
+        super(scene, x, y, 'boss_invulnerable');
         scene.add.existing(this);
         scene.physics.add.existing(this, false); // Dynamic body for movement
+
+        this.setDisplaySize(100, 100);
 
         this.health = 5;
         this.isVulnerable = false;
@@ -37,8 +39,7 @@ export default class Boss extends Phaser.GameObjects.Rectangle {
                     this.isVulnerable = true;
                     this.timer = 0;
                     this.setAlpha(1);
-                    this.setFillStyle(0xffff00); // Yellow when vulnerable
-                    // trigger sfx here if we had audio: this.scene.sound.play('boss_vulnerable_sfx');
+                    this.setTexture('boss_vulnerable');
                     console.log("Boss is vulnerable!");
                 }
                 break;
@@ -54,7 +55,7 @@ export default class Boss extends Phaser.GameObjects.Rectangle {
         this.state = 'INVULNERABLE';
         this.isVulnerable = false;
         this.timer = 0;
-        this.setFillStyle(0x880088);
+        this.setTexture('boss_invulnerable');
         this.setAlpha(1);
     }
 
