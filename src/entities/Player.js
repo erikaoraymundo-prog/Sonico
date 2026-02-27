@@ -4,7 +4,8 @@ export default class Player extends Phaser.GameObjects.Rectangle {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
-        this.body.setCollideWorldBounds(true);
+        // scene.physics.add.existing(this); // already done in super or manual call
+        this.body.setCollideWorldBounds(false); // Permite cair no abismo
         this.body.setDragX(0.95); // Custom drag handled in update
 
         this.speed = 400;
@@ -15,6 +16,12 @@ export default class Player extends Phaser.GameObjects.Rectangle {
 
     update(cursors) {
         if (this.isDying) return;
+
+        // Check for fall out of bounds
+        if (this.y > 650) {
+            this.die();
+            return;
+        }
 
         // Inércia do Sonic logic
         if (cursors.left.isDown) {
@@ -36,6 +43,18 @@ export default class Player extends Phaser.GameObjects.Rectangle {
         if (cursors.up.isDown && this.body.touching.down) {
             this.body.setVelocityY(this.jumpForce);
         }
+    }
+
+    die() {
+        if (this.isDying) return;
+        this.isDying = true;
+        this.body.setVelocity(0, -400); // Small bounce before falling
+        this.body.setAcceleration(0);
+        this.scene.cameras.main.stopFollow();
+
+        this.scene.time.delayedCall(1000, () => {
+            this.scene.scene.restart();
+        });
     }
 
     takeDamage() {

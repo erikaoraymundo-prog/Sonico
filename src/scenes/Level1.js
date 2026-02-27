@@ -14,10 +14,14 @@ export default class Level1 extends Phaser.Scene {
     create() {
         this.add.text(16, 16, 'Use Setas para Mover | Pule nos inimigos!', { fontSize: '18px', fill: '#fff' });
 
-        // Ground platform
+        // Ground platforms with gaps
         this.platforms = this.physics.add.staticGroup();
-        const ground = this.add.rectangle(400, 580, 1600, 40, 0x00ff00);
-        this.platforms.add(ground);
+
+        // Platform 1
+        this.platforms.add(this.add.rectangle(400, 580, 700, 40, 0x00ff00));
+        // Gap here (from 750 to 950)
+        // Platform 2
+        this.platforms.add(this.add.rectangle(1300, 580, 700, 40, 0x00ff00));
 
         // Player
         this.player = new Player(this, 100, 450);
@@ -77,16 +81,20 @@ export default class Level1 extends Phaser.Scene {
 
     handlePlayerBossCollision(player, boss) {
         if (boss.isVulnerable) {
-            // Se o Player colidir por cima: boss.health -= 1
-            if (player.body.velocity.y > 0 && player.y < boss.y - 40) {
+            if (player.body.velocity.y > 0 && player.y < boss.y - 20) {
                 if (boss.takeHit()) {
-                    player.body.setVelocityY(-300);
+                    player.body.setVelocityY(-400);
+                    // Check if boss is dead (not active anymore)
+                    this.time.delayedCall(1000, () => {
+                        if (!boss.active) {
+                            this.scene.start('Level2');
+                        }
+                    });
                 }
             } else {
                 player.takeDamage();
             }
         } else {
-            // Colisões com o Player resultam em dano para o jogador.
             player.takeDamage();
         }
     }

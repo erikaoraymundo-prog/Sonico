@@ -62,10 +62,21 @@ export default class Boss extends Phaser.GameObjects.Rectangle {
         if (!this.isVulnerable) return false;
 
         this.health -= 1;
-        console.log(`Boss health: ${this.health}`);
+        this.isVulnerable = false; // Temporary invulnerable after hit
+
+        // Visual feedback
+        this.scene.tweens.add({
+            targets: this,
+            alpha: 0,
+            duration: 100,
+            yoyo: true,
+            repeat: 3
+        });
 
         if (this.health <= 0) {
-            this.destroy();
+            this.scene.time.delayedCall(500, () => {
+                this.destroy();
+            });
             return true;
         }
 
