@@ -2,7 +2,7 @@ export default class Boss extends Phaser.GameObjects.Rectangle {
     constructor(scene, x, y) {
         super(scene, x, y, 80, 80, 0x880088);
         scene.add.existing(this);
-        scene.physics.add.existing(this, true); // Static body or Kinematic? Let's use regular physics
+        scene.physics.add.existing(this, false); // Dynamic body for movement
 
         this.health = 5;
         this.isVulnerable = false;

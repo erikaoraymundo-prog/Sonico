@@ -2,17 +2,18 @@ import Player from '../entities/Player.js';
 import Enemy from '../entities/Enemy.js';
 import Boss from '../entities/Boss.js';
 
-export default class Level1 extends Phaser.Scene {
+export default class Level2 extends Phaser.Scene {
     constructor() {
-        super('Level1');
+        super('Level2');
     }
 
     create() {
-        this.add.text(16, 16, 'Use Setas para Mover | Pule nos inimigos!', { fontSize: '18px', fill: '#fff' });
+        this.add.text(16, 16, 'Level 2 - O Desafio Aumenta!', { fontSize: '24px', fill: '#fff' });
 
         this.platforms = this.physics.add.staticGroup();
-        this.platforms.add(this.add.rectangle(400, 580, 700, 40, 0x00ff00));
-        this.platforms.add(this.add.rectangle(1300, 580, 700, 40, 0x00ff00));
+        this.platforms.add(this.add.rectangle(200, 580, 400, 40, 0x00aaff));
+        this.platforms.add(this.add.rectangle(700, 500, 300, 40, 0x00aaff));
+        this.platforms.add(this.add.rectangle(1200, 580, 600, 40, 0x00aaff));
 
         this.player = new Player(this, 100, 450);
 
@@ -21,10 +22,13 @@ export default class Level1 extends Phaser.Scene {
             runChildUpdate: true
         });
 
-        this.enemies.add(new Enemy(this, 400, 450));
-        this.enemies.add(new Enemy(this, 700, 450));
+        this.enemies.add(new Enemy(this, 700, 400));
+        this.enemies.add(new Enemy(this, 1200, 450));
+        this.enemies.add(new Enemy(this, 1400, 450));
 
-        this.boss = new Boss(this, 1200, 500);
+        this.boss = new Boss(this, 1400, 500);
+        this.boss.health = 8;
+        this.boss.moveSpeed = 0.004;
 
         this.physics.add.collider(this.player, this.platforms);
         this.physics.add.collider(this.enemies, this.platforms);
@@ -53,7 +57,7 @@ export default class Level1 extends Phaser.Scene {
     handlePlayerEnemyCollision(player, enemy) {
         if (player.body.velocity.y > 0 && player.y < enemy.y - 20) {
             enemy.die();
-            player.body.setVelocityY(-300);
+            player.body.setVelocityY(-350);
         } else {
             player.takeDamage();
         }
@@ -63,10 +67,11 @@ export default class Level1 extends Phaser.Scene {
         if (boss.isVulnerable) {
             if (player.body.velocity.y > 0 && player.y < boss.y - 20) {
                 if (boss.takeHit()) {
-                    player.body.setVelocityY(-400);
-                    this.time.delayedCall(1000, () => {
+                    player.body.setVelocityY(-450);
+                    this.time.delayedCall(1500, () => {
                         if (!boss.active) {
-                            this.scene.start('Level2');
+                            this.add.text(800, 300, 'VOCÊ VENCEU!', { fontSize: '64px', fill: '#ff0' }).setOrigin(0.5).setScrollFactor(0);
+                            this.time.delayedCall(3000, () => this.scene.start('Level1'));
                         }
                     });
                 }
